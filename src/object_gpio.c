@@ -15,8 +15,8 @@ typedef struct _gpio_instance_
 {
     struct _gpio_instance_ * next;   // matches lwm2m_list_t::next
     uint16_t shortID;               // matches lwm2m_list_t::id
-	uint16_t gpioPinID;
-	uint8_t gpioPinDir;	
+    uint16_t gpioPinID;
+    uint8_t gpioPinDir; 
 } gpio_instance_t;
 
 
@@ -25,34 +25,34 @@ static uint8_t gpio_read(uint16_t instanceId,
                                lwm2m_data_t ** dataArrayP,
                                lwm2m_object_t * objectP)
 {
-	
-	gpio_instance_t * targetP;
+    
+    gpio_instance_t * targetP;
 
     targetP = (gpio_instance_t *)lwm2m_list_find(objectP->instanceList, instanceId);
     if (NULL == targetP) return COAP_404_NOT_FOUND;
-	
-	uint16_t pin_id = targetP->gpioPinID;
-	
-	
-	//MRAA BEGIN
+    
+    uint16_t pin_id = targetP->gpioPinID;
+    
+    
+    //MRAA BEGIN
 
-	mraa_result_t status = MRAA_SUCCESS;
-	mraa_gpio_context gpio;
-	mraa_init();
+    mraa_result_t status = MRAA_SUCCESS;
+    mraa_gpio_context gpio;
+    mraa_init();
 
-	gpio = mraa_gpio_init(pin_id);
+    gpio = mraa_gpio_init(pin_id);
     if (gpio == NULL) {
         fprintf(stderr, "Failed to initialize GPIO %d\n", pin_id);
         mraa_deinit();
         return COAP_404_NOT_FOUND;
-	}
+    }
 
-	uint8_t pin_value =  mraa_gpio_read(gpio);
-	if(pin_value == -1){
-		fprintf(stderr, "Failed to read value of GPIO %d\n", pin_id);
+    uint8_t pin_value =  mraa_gpio_read(gpio);
+    if(pin_value == -1){
+        fprintf(stderr, "Failed to read value of GPIO %d\n", pin_id);
         mraa_deinit();
         return COAP_404_NOT_FOUND;
-	}
+    }
 
     mraa_gpio_dir_t dir;
     status = mraa_gpio_read_dir(gpio, &dir);
@@ -63,26 +63,26 @@ static uint8_t gpio_read(uint16_t instanceId,
 
     uint8_t pin_dir = (int)dir;
 
-	status = mraa_gpio_close(gpio);
+    status = mraa_gpio_close(gpio);
     if (status != MRAA_SUCCESS) {
         fprintf(stderr, "Failed to close GPIO %d\n", pin_id);
-	}
+    }
 
-	mraa_deinit();
+    mraa_deinit();
 
-	//MRAA END
+    //MRAA END
 
-	
-	*dataArrayP = lwm2m_data_new(3);
-	*numDataP = 3;
+    
+    *dataArrayP = lwm2m_data_new(3);
+    *numDataP = 3;
 
-	(*dataArrayP)[0].id = 0;
-	(*dataArrayP)[1].id = 1;
+    (*dataArrayP)[0].id = 0;
+    (*dataArrayP)[1].id = 1;
     (*dataArrayP)[2].id = 2;
     lwm2m_data_encode_int(pin_id, *dataArrayP);
-	lwm2m_data_encode_int(pin_value, *dataArrayP + 1);
-	lwm2m_data_encode_int(pin_dir, *dataArrayP + 2);
-	
+    lwm2m_data_encode_int(pin_value, *dataArrayP + 1);
+    lwm2m_data_encode_int(pin_dir, *dataArrayP + 2);
+    
 
     return COAP_205_CONTENT;
 }
@@ -93,20 +93,20 @@ static uint8_t gpio_write(uint16_t instanceId,
                          lwm2m_data_t * dataArray,
                          lwm2m_object_t * objectP)
 {
-	gpio_instance_t * targetP;
+    gpio_instance_t * targetP;
     int i;
 
     targetP = (gpio_instance_t *)lwm2m_list_find(objectP->instanceList, instanceId);
     if (NULL == targetP) return COAP_404_NOT_FOUND;
 
 
-	int64_t value;
+    int64_t value;
 
     if (1 != lwm2m_data_decode_int(dataArray, &value) || value > 1 || value < 0)
-	{
-		return COAP_400_BAD_REQUEST;
-	}
-	
+    {
+        return COAP_400_BAD_REQUEST;
+    }
+    
     int valueToSet = (int)value;
     int dataIdToChange = dataArray[0].id;
     uint16_t pin_id = targetP->gpioPinID;
@@ -167,7 +167,7 @@ static uint8_t gpio_write(uint16_t instanceId,
 
     //MRAA END
 
-	return COAP_204_CHANGED;	
+    return COAP_204_CHANGED;    
 }
 
 
@@ -180,21 +180,21 @@ lwm2m_object_t * get_gpio_object(void)
     if (NULL != myObj)
     {
         int i;
-		
-		int gpio_pins_number = 2;
+        
+        int gpio_pins_number = 2;
         gpio_instance_t * targetP;
 
         memset(myObj, 0, sizeof(lwm2m_object_t));
-		
-		// ID obiektu
+        
+        // ID obiektu
         myObj->objID = 31128;
         for (i=0 ; i < num_pins ; i++)
         {
             targetP = (gpio_instance_t *)lwm2m_malloc(sizeof(gpio_instance_t));
             if (NULL == targetP) return NULL;
             memset(targetP, 0, sizeof(gpio_instance_t));
-			targetP->shortID = pins[i];
-			targetP->gpioPinID = pins[i];
+            targetP->shortID = pins[i];
+            targetP->gpioPinID = pins[i];
             myObj->instanceList = LWM2M_LIST_ADD(myObj->instanceList, targetP);
         }
 

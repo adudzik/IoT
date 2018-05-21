@@ -95,7 +95,7 @@ static uint8_t prv_read(uint16_t instanceId,
             return COAP_404_NOT_FOUND;
         }
     }
-	
+    
     return COAP_205_CONTENT;
 }
 
@@ -286,7 +286,7 @@ lwm2m_object_t * get_test_object(void)
             testObj->instanceList = LWM2M_LIST_ADD(testObj->instanceList, targetP);
         }
 
-		/*
+        /*
          * From a single instance object, two more functions are available.
          * - The first one (createFunc) create a new instance and filled it with the provided informations. If an ID is
          *   provided a check is done for verifying his disponibility, or a new one is generated.

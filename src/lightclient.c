@@ -253,8 +253,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-	//dodaje od siebie
-	objArray[4] = get_gpio_object();
+    //dodaje od siebie
+    objArray[4] = get_gpio_object();
     if (NULL == objArray[4])
     {
         fprintf(stderr, "Failed to create gpio object\r\n");
@@ -390,7 +390,7 @@ int main(int argc, char *argv[])
     free_server_object(objArray[1]);
     free_object_device(objArray[2]);
     free_test_object(objArray[3]);
-	free_gpio_object(objArray[4]);
+    free_gpio_object(objArray[4]);
 
     fprintf(stdout, "\r\n\n");
 
